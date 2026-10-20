@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Doctor Profile - MediBook</title>
+
+    <link rel="stylesheet" href="../css/doctor-profile.css">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+
+<body>
+
+    <!-- ================= NAVBAR ================= -->
+
+    <header class="navbar">
+
+        <div class="nav-container">
+
+            <a href="../index.html" class="logo">
+                <div class="logo-icon">
+                    <i class="fa-solid fa-heart-pulse"></i>
+                </div>
+
+                <span>Medi<span>Book</span></span>
+            </a>
+
+            <nav class="nav-links">
+
+                <a href="../index.html">
+                    <i class="fa-solid fa-house"></i>
+                    Home
+                </a>
+
+                <a href="doctors.html" class="active">
+                    <i class="fa-solid fa-user-doctor"></i>
+                    Doctors
+                </a>
+
+                <a href="services.html">
+                    <i class="fa-solid fa-stethoscope"></i>
+                    Services
+                </a>
+
+                <a href="about.html">
+                    <i class="fa-solid fa-circle-info"></i>
+                    About
+                </a>
+
+            </nav>
+
+            <div class="nav-buttons">
+
+                <a href="login.html" class="login-btn">
+                    Login
+                </a>
+
+                <a href="register.html" class="register-btn">
+                    Register
+                </a>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- ================= PAGE HEADER ================= -->
+
+    <section class="page-header">
+
+        <div class="container">
+
+            <div class="breadcrumb">
+
+                <a href="../index.html">Home</a>
+
+                <i class="fa-solid fa-chevron-right"></i>
+
+                <a href="doctors.html">Doctors</a>
+
+                <i class="fa-solid fa-chevron-right"></i>
+
+                <span>Doctor Profile</span>
+
+            </div>
+
+            <h1>Doctor Profile</h1>
+
+            <p>
+                View doctor information and book your appointment.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= DOCTOR PROFILE ================= -->
+
+    <main class="container profile-section">
+
+        <div class="profile-grid">
+
+
+            <!-- LEFT PROFILE CARD -->
+
+            <div class="doctor-card">
+
+                <div class="doctor-image">
+
+                    <div class="doctor-avatar">
+                        <i class="fa-solid fa-user-doctor"></i>
+                    </div>
+
+                    <span class="available-badge">
+                        <span class="status-dot"></span>
+                        Available
+                    </span>
+
+                </div>
+
+
+                <div class="doctor-basic">
+
+                    <div class="rating">
+
+                        <i class="fa-solid fa-star"></i>
+
+                        <strong>4.9</strong>
+
+                        <span>(124 reviews)</span>
+
+                    </div>
+
+                    <h2>Dr. Rajiv Sharma</h2>
+
+                    <p class="specialization">
+                        <i class="fa-solid fa-heart-pulse"></i>
+                        Cardiologist
+                    </p>
+
+                    <p class="experience">
+                        <i class="fa-solid fa-briefcase"></i>
+                        15+ Years Experience
+                    </p>
+
+                </div>
+
+
+                <div class="doctor-details">
+
+                    <div class="detail-item">
+
+                        <i class="fa-solid fa-location-dot"></i>
+
+                        <div>
+                            <span>Location</span>
+                            <strong>MediBook Healthcare Center</strong>
+                        </div>
+
+                    </div>
+
+
+                    <div class="detail-item">
+
+                        <i class="fa-solid fa-language"></i>
+
+                        <div>
+                            <span>Languages</span>
+                            <strong>English, Hindi</strong>
+                        </div>
+
+                    </div>
+
+
+                    <div class="detail-item">
+
+                        <i class="fa-solid fa-indian-rupee-sign"></i>
+
+                        <div>
+                            <span>Consultation Fee</span>
+                            <strong>₹800</strong>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <a href="appointment.html" class="book-btn">
+
+                    <i class="fa-solid fa-calendar-check"></i>
+
+                    Book Appointment
+
+                </a>
+
+            </div>
+
+
+            <!-- RIGHT INFORMATION -->
+
+            <div class="doctor-information">
+
+
+                <!-- ABOUT -->
+
+                <section class="info-box">
+
+                    <div class="section-title">
+
+                        <div class="title-icon">
+                            <i class="fa-solid fa-user-doctor"></i>
+                        </div>
+
+                        <div>
+                            <h3>About Doctor</h3>
+                            <p>Professional information</p>
+                        </div>
+
+                    </div>
+
+                    <p class="description">
+
+                        Dr. Rajiv Sharma is an experienced cardiologist
+                        specializing in the diagnosis and treatment of
+                        cardiovascular diseases. He focuses on providing
+                        personalized healthcare and helping patients
+                        maintain a healthy heart.
+
+                    </p>
+
+                    <p class="description">
+
+                        With more than 15 years of professional experience,
+                        he provides consultation for heart-related conditions,
+                        preventive healthcare and regular cardiac check-ups.
+
+                    </p>
+
+                </section>
+
+
+                <!-- SPECIALIZATION -->
+
+                <section class="info-box">
+
+                    <div class="section-title">
+
+                        <div class="title-icon">
+                            <i class="fa-solid fa-stethoscope"></i>
+                        </div>
+
+                        <div>
+                            <h3>Specialization</h3>
+                            <p>Areas of expertise</p>
+                        </div>
+
+                    </div>
+
+
+                    <div class="specialization-list">
+
+                        <span>Cardiology</span>
+
+                        <span>Heart Disease</span>
+
+                        <span>Hypertension</span>
+
+                        <span>Preventive Cardiology</span>
+
+                        <span>Cardiac Consultation</span>
+
+                    </div>
+
+                </section>
+
+
+                <!-- EXPERIENCE -->
+
+                <section class="info-box">
+
+                    <div class="section-title">
+
+                        <div class="title-icon">
+                            <i class="fa-solid fa-award"></i>
+                        </div>
+
+                        <div>
+                            <h3>Experience & Education</h3>
+                            <p>Professional background</p>
+                        </div>
+
+                    </div>
+
+
+                    <div class="timeline">
+
+                        <div class="timeline-item">
+
+                            <div class="timeline-icon">
+                                <i class="fa-solid fa-graduation-cap"></i>
+                            </div>
+
+                            <div>
+                                <h4>MBBS</h4>
+                                <p>Medical University</p>
+                            </div>
+
+                        </div>
+
+
+                        <div class="timeline-item">
+
+                            <div class="timeline-icon">
+                                <i class="fa-solid fa-graduation-cap"></i>
+                            </div>
+
+                            <div>
+                                <h4>MD - Cardiology</h4>
+                                <p>Institute of Medical Sciences</p>
+                            </div>
+
+                        </div>
+
+
+                        <div class="timeline-item">
+
+                            <div class="timeline-icon">
+                                <i class="fa-solid fa-briefcase"></i>
+                            </div>
+
+                            <div>
+                                <h4>15+ Years Experience</h4>
+                                <p>Cardiology & Patient Care</p>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- AVAILABILITY -->
+
+                <section class="info-box">
+
+                    <div class="section-title">
+
+                        <div class="title-icon">
+                            <i class="fa-solid fa-calendar-days"></i>
+                        </div>
+
+                        <div>
+                            <h3>Availability</h3>
+                            <p>Doctor's consultation schedule</p>
+                        </div>
+
+                    </div>
+
+
+                    <div class="availability-grid">
+
+                        <div class="day available-day">
+
+                            <strong>Monday</strong>
+
+                            <span>10:00 AM - 2:00 PM</span>
+
+                        </div>
+
+
+                        <div class="day available-day">
+
+                            <strong>Wednesday</strong>
+
+                            <span>10:00 AM - 2:00 PM</span>
+
+                        </div>
+
+
+                        <div class="day available-day">
+
+                            <strong>Friday</strong>
+
+                            <span>4:00 PM - 8:00 PM</span>
+
+                        </div>
+
+
+                        <div class="day unavailable-day">
+
+                            <strong>Sunday</strong>
+
+                            <span>Unavailable</span>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <!-- ================= FOOTER ================= -->
+
+    <footer class="footer">
+
+        <div class="container footer-content">
+
+            <div class="footer-logo">
+
+                <div class="logo-icon">
+                    <i class="fa-solid fa-heart-pulse"></i>
+                </div>
+
+                <strong>MediBook</strong>
+
+            </div>
+
+            <p>
+                © 2026 MediBook. Your trusted healthcare companion.
+            </p>
+
+        </div>
+
+    </footer>
+
+
+</body>
+</html>

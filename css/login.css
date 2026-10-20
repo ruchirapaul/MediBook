@@ -1,0 +1,779 @@
+/* =====================================================
+   MEDIBOOK LOGIN PAGE
+===================================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+body {
+    font-family: "Inter", sans-serif;
+
+    background: #f4f9f8;
+
+    color: #173939;
+
+    min-height: 100vh;
+}
+
+
+button,
+input {
+    font-family: inherit;
+}
+
+
+button {
+    cursor: pointer;
+}
+
+
+a {
+    text-decoration: none;
+}
+
+
+/* =====================================================
+   MAIN PAGE
+===================================================== */
+
+.auth-page {
+
+    min-height: 100vh;
+
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+}
+
+
+/* =====================================================
+   LEFT VISUAL
+===================================================== */
+
+.auth-visual {
+
+    background:
+        linear-gradient(
+            145deg,
+            #087f7b,
+            #075d5b
+        );
+
+    color: white;
+
+    padding: 45px;
+
+    position: relative;
+
+    overflow: hidden;
+
+}
+
+
+.auth-visual::before {
+
+    content: "";
+
+    position: absolute;
+
+    width: 400px;
+    height: 400px;
+
+    border-radius: 50%;
+
+    background: rgba(255, 255, 255, 0.05);
+
+    top: -100px;
+    right: -120px;
+
+}
+
+
+.auth-visual::after {
+
+    content: "";
+
+    position: absolute;
+
+    width: 300px;
+    height: 300px;
+
+    border-radius: 50%;
+
+    background: rgba(255, 255, 255, 0.04);
+
+    bottom: -120px;
+    left: -100px;
+
+}
+
+
+.visual-content {
+
+    min-height: 100%;
+
+    position: relative;
+
+    z-index: 2;
+
+    display: flex;
+
+    flex-direction: column;
+
+}
+
+
+.logo {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    width: fit-content;
+
+}
+
+
+.logo-icon {
+
+    width: 40px;
+    height: 40px;
+
+    border-radius: 11px;
+
+    background: white;
+
+    color: #087f7b;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 18px;
+
+}
+
+
+.logo-text {
+
+    color: white;
+
+    font-size: 22px;
+
+    font-weight: 800;
+
+}
+
+
+.logo-text span {
+
+    color: #b8ebe8;
+
+}
+
+
+.visual-main {
+
+    max-width: 470px;
+
+    margin: auto 0;
+
+}
+
+
+.visual-icon {
+
+    width: 70px;
+    height: 70px;
+
+    background: rgba(255, 255, 255, 0.12);
+
+    border: 1px solid rgba(255, 255, 255, 0.15);
+
+    border-radius: 18px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 30px;
+
+    margin-bottom: 28px;
+
+}
+
+
+.visual-main h1 {
+
+    font-size: clamp(38px, 4vw, 58px);
+
+    line-height: 1.05;
+
+    letter-spacing: -2px;
+
+    margin-bottom: 20px;
+
+}
+
+
+.visual-main p {
+
+    font-size: 14px;
+
+    line-height: 1.8;
+
+    color: #d4eeee;
+
+    max-width: 430px;
+
+}
+
+
+.visual-points {
+
+    margin-top: 30px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 14px;
+
+}
+
+
+.visual-points div {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+}
+
+
+.visual-points i {
+
+    color: #b8ebe8;
+
+    font-size: 16px;
+
+}
+
+
+.visual-points span {
+
+    font-size: 12px;
+
+    color: #e0f3f2;
+
+}
+
+
+.visual-footer {
+
+    color: #a9d4d1;
+
+    font-size: 10px;
+
+}
+
+
+/* =====================================================
+   FORM SECTION
+===================================================== */
+
+.auth-form-section {
+
+    background: white;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 40px;
+
+}
+
+
+.auth-form-container {
+
+    width: 100%;
+
+    max-width: 430px;
+
+}
+
+
+.mobile-logo {
+
+    display: none;
+
+}
+
+
+.form-heading {
+
+    margin-bottom: 25px;
+
+}
+
+
+.form-heading h2 {
+
+    font-size: 31px;
+
+    color: #173939;
+
+    letter-spacing: -1px;
+
+    margin-bottom: 7px;
+
+}
+
+
+.form-heading p {
+
+    color: #7a8989;
+
+    font-size: 12px;
+
+}
+
+
+/* =====================================================
+   ROLE SELECTION
+===================================================== */
+
+.role-selection {
+
+    display: grid;
+
+    grid-template-columns: repeat(3, 1fr);
+
+    gap: 8px;
+
+    margin-bottom: 25px;
+
+}
+
+
+.role-btn {
+
+    border: 1px solid #e1eaea;
+
+    background: #f9fbfb;
+
+    color: #728181;
+
+    padding: 13px 7px;
+
+    border-radius: 9px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    gap: 6px;
+
+    font-size: 10px;
+
+    transition: 0.25s;
+
+}
+
+
+.role-btn i {
+
+    font-size: 16px;
+
+}
+
+
+.role-btn:hover {
+
+    border-color: #a9d9d6;
+
+    color: #087f7b;
+
+}
+
+
+.role-btn.active {
+
+    border-color: #087f7b;
+
+    background: #eaf7f5;
+
+    color: #087f7b;
+
+}
+
+
+/* =====================================================
+   FORM
+===================================================== */
+
+.form-group {
+
+    margin-bottom: 18px;
+
+}
+
+
+.form-group label {
+
+    display: block;
+
+    color: #365252;
+
+    font-size: 11px;
+
+    font-weight: 600;
+
+    margin-bottom: 7px;
+
+}
+
+
+.input-wrapper {
+
+    position: relative;
+
+}
+
+
+.input-wrapper > i {
+
+    position: absolute;
+
+    left: 14px;
+
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    color: #91a0a0;
+
+    font-size: 13px;
+
+}
+
+
+.input-wrapper input {
+
+    width: 100%;
+
+    border: 1px solid #dfe8e8;
+
+    background: #fbfcfc;
+
+    padding: 13px 40px;
+
+    border-radius: 9px;
+
+    outline: none;
+
+    color: #173939;
+
+    font-size: 12px;
+
+    transition: 0.25s;
+
+}
+
+
+.input-wrapper input:focus {
+
+    border-color: #087f7b;
+
+    background: white;
+
+    box-shadow: 0 0 0 3px rgba(8, 127, 123, 0.08);
+
+}
+
+
+.password-toggle {
+
+    position: absolute;
+
+    right: 12px;
+
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    border: none;
+
+    background: transparent;
+
+    color: #91a0a0;
+
+    font-size: 13px;
+
+}
+
+
+/* =====================================================
+   OPTIONS
+===================================================== */
+
+.form-options {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin: 5px 0 20px;
+
+}
+
+
+.remember {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    font-size: 10px;
+
+    color: #718181;
+
+}
+
+
+.remember input {
+
+    accent-color: #087f7b;
+
+}
+
+
+.form-options a {
+
+    color: #087f7b;
+
+    font-size: 10px;
+
+    font-weight: 600;
+
+}
+
+
+/* =====================================================
+   LOGIN BUTTON
+===================================================== */
+
+.login-submit {
+
+    width: 100%;
+
+    border: none;
+
+    background: #087f7b;
+
+    color: white;
+
+    padding: 14px;
+
+    border-radius: 9px;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    gap: 8px;
+
+    transition: 0.3s;
+
+}
+
+
+.login-submit:hover {
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 10px 25px
+        rgba(8, 127, 123, 0.22);
+
+}
+
+
+/* =====================================================
+   DIVIDER
+===================================================== */
+
+.divider {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    margin: 25px 0;
+
+}
+
+
+.divider::before,
+.divider::after {
+
+    content: "";
+
+    height: 1px;
+
+    background: #e8eeee;
+
+    flex: 1;
+
+}
+
+
+.divider span {
+
+    color: #9aa6a6;
+
+    font-size: 9px;
+
+}
+
+
+/* =====================================================
+   REGISTER TEXT
+===================================================== */
+
+.register-text {
+
+    text-align: center;
+
+    color: #7a8989;
+
+    font-size: 11px;
+
+}
+
+
+.register-text a {
+
+    color: #087f7b;
+
+    font-weight: 700;
+
+}
+
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width: 850px) {
+
+    .auth-page {
+
+        grid-template-columns: 1fr;
+
+    }
+
+
+    .auth-visual {
+
+        display: none;
+
+    }
+
+
+    .auth-form-section {
+
+        min-height: 100vh;
+
+    }
+
+
+    .mobile-logo {
+
+        display: flex;
+
+        justify-content: center;
+
+        margin-bottom: 50px;
+
+    }
+
+
+    .mobile-logo .logo-text {
+
+        color: #173939;
+
+    }
+
+
+    .mobile-logo .logo-text span {
+
+        color: #087f7b;
+
+    }
+
+
+    .mobile-logo .logo-icon {
+
+        background: #087f7b;
+
+        color: white;
+
+    }
+
+}
+
+
+@media (max-width: 450px) {
+
+    .auth-form-section {
+
+        padding: 25px 18px;
+
+    }
+
+
+    .form-heading h2 {
+
+        font-size: 27px;
+
+    }
+
+
+    .role-btn {
+
+        padding: 11px 5px;
+
+    }
+
+}

@@ -1,0 +1,599 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: #f5f9fa;
+    color: #1f2937;
+}
+
+.register-container {
+    min-height: 100vh;
+    display: flex;
+}
+
+
+/* =========================
+   LEFT SIDE
+========================= */
+
+.register-left {
+    width: 45%;
+    min-height: 100vh;
+    background: linear-gradient(145deg, #007f7b, #00a6a0);
+    color: white;
+    padding: 40px 60px;
+    position: relative;
+    overflow: hidden;
+}
+
+.register-left::before {
+    content: "";
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.06);
+    top: -150px;
+    right: -150px;
+}
+
+.register-left::after {
+    content: "";
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    bottom: -120px;
+    left: -100px;
+}
+
+
+/* BRAND */
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 27px;
+    font-weight: 800;
+    position: relative;
+    z-index: 2;
+}
+
+.brand span span {
+    color: #d8fffc;
+}
+
+.brand-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: white;
+    color: #008c87;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 21px;
+}
+
+
+/* LEFT CONTENT */
+
+.left-content {
+    max-width: 500px;
+    margin: 110px auto 0;
+    position: relative;
+    z-index: 2;
+}
+
+.medical-icon {
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.13);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 34px;
+    margin-bottom: 28px;
+}
+
+.left-content h1 {
+    font-size: 43px;
+    line-height: 1.15;
+    margin-bottom: 18px;
+}
+
+.left-content > p {
+    font-size: 16px;
+    line-height: 1.7;
+    color: #e0fffd;
+    margin-bottom: 45px;
+}
+
+
+/* BENEFITS */
+
+.benefits {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.benefit {
+    display: flex;
+    gap: 17px;
+    align-items: center;
+}
+
+.benefit-icon {
+    min-width: 46px;
+    height: 46px;
+    border-radius: 13px;
+    background: rgba(255, 255, 255, 0.13);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}
+
+.benefit h3 {
+    font-size: 15px;
+    margin-bottom: 4px;
+}
+
+.benefit p {
+    font-size: 13px;
+    color: #d7fffc;
+}
+
+
+/* =========================
+   RIGHT SIDE
+========================= */
+
+.register-right {
+    width: 55%;
+    min-height: 100vh;
+    background: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 45px 60px;
+}
+
+.register-form-container {
+    width: 100%;
+    max-width: 580px;
+}
+
+
+/* MOBILE BRAND */
+
+.mobile-brand {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 25px;
+    font-weight: 800;
+    color: #008c87;
+    margin-bottom: 30px;
+}
+
+.mobile-brand .brand-icon {
+    background: #008c87;
+    color: white;
+}
+
+
+/* HEADING */
+
+.form-heading {
+    margin-bottom: 30px;
+}
+
+.form-heading h2 {
+    font-size: 31px;
+    color: #17202a;
+    margin-bottom: 8px;
+}
+
+.form-heading p {
+    font-size: 14px;
+    color: #718096;
+}
+
+
+/* =========================
+   FORM
+========================= */
+
+.form-group {
+    margin-bottom: 18px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 8px;
+}
+
+.input-wrapper {
+    height: 48px;
+    border: 1px solid #dce5e8;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    padding: 0 14px;
+    transition: 0.25s;
+    background: #fff;
+}
+
+.input-wrapper:focus-within {
+    border-color: #00a19b;
+    box-shadow: 0 0 0 3px rgba(0, 161, 155, 0.08);
+}
+
+.input-wrapper > i {
+    color: #8b9aa3;
+    font-size: 14px;
+    margin-right: 11px;
+}
+
+.input-wrapper input,
+.input-wrapper select {
+    border: none;
+    outline: none;
+    width: 100%;
+    height: 100%;
+    font-family: inherit;
+    font-size: 13px;
+    color: #25313a;
+    background: transparent;
+}
+
+.input-wrapper input::placeholder {
+    color: #a6b0b6;
+}
+
+.input-wrapper select {
+    cursor: pointer;
+}
+
+.two-column {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+
+/* =========================
+   ROLE SELECTION
+========================= */
+
+.role-selection {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.role-option {
+    height: 48px;
+    border: 1px solid #dce5e8;
+    border-radius: 9px;
+    background: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: #6b7280;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    transition: 0.25s;
+}
+
+.role-option i {
+    font-size: 14px;
+}
+
+.role-option:hover {
+    border-color: #00a19b;
+    color: #008c87;
+}
+
+.role-option.active {
+    background: #e9fbfa;
+    border-color: #00a19b;
+    color: #008c87;
+}
+
+
+/* =========================
+   PASSWORD
+========================= */
+
+.password-toggle {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: #8b9aa3;
+    font-size: 15px;
+    padding: 5px;
+}
+
+.password-toggle:hover {
+    color: #008c87;
+}
+
+
+/* PASSWORD STRENGTH */
+
+.password-strength {
+    margin-top: 7px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.strength-bar {
+    height: 4px;
+    flex: 1;
+    background: #edf1f2;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.strength-bar span {
+    display: block;
+    width: 0;
+    height: 100%;
+    border-radius: 5px;
+    transition: 0.3s;
+}
+
+.password-strength > span {
+    min-width: 105px;
+    font-size: 10px;
+    color: #9aa4aa;
+}
+
+
+/* =========================
+   TERMS
+========================= */
+
+.terms {
+    margin: 5px 0 18px;
+}
+
+.checkbox-container {
+    display: flex !important;
+    align-items: flex-start;
+    gap: 9px;
+    cursor: pointer;
+    margin: 0 !important;
+}
+
+.checkbox-container input {
+    display: none;
+}
+
+.checkmark {
+    width: 17px;
+    height: 17px;
+    min-width: 17px;
+    border: 1px solid #ccd7db;
+    border-radius: 4px;
+    margin-top: 1px;
+    position: relative;
+    transition: 0.2s;
+}
+
+.checkbox-container input:checked + .checkmark {
+    background: #008f8a;
+    border-color: #008f8a;
+}
+
+.checkbox-container input:checked + .checkmark::after {
+    content: "✓";
+    position: absolute;
+    color: white;
+    font-size: 11px;
+    font-weight: bold;
+    left: 3px;
+    top: -1px;
+}
+
+.terms-text {
+    font-size: 11px;
+    line-height: 1.5;
+    color: #78858c;
+    font-weight: 400;
+}
+
+.terms-text a {
+    color: #008f8a;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+
+/* =========================
+   MESSAGE
+========================= */
+
+.message {
+    display: none;
+    padding: 11px 13px;
+    border-radius: 7px;
+    margin-bottom: 15px;
+    font-size: 12px;
+}
+
+.message.error {
+    display: block;
+    background: #fff1f1;
+    color: #d63636;
+    border: 1px solid #ffd4d4;
+}
+
+.message.success {
+    display: block;
+    background: #edfff8;
+    color: #087f5b;
+    border: 1px solid #c8f2e3;
+}
+
+
+/* =========================
+   REGISTER BUTTON
+========================= */
+
+.register-btn {
+    width: 100%;
+    height: 49px;
+    border: none;
+    border-radius: 9px;
+    background: linear-gradient(135deg, #008f8a, #00aaa3);
+    color: white;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    transition: 0.25s;
+    box-shadow: 0 7px 18px rgba(0, 143, 138, 0.18);
+}
+
+.register-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px rgba(0, 143, 138, 0.25);
+}
+
+.register-btn:active {
+    transform: translateY(0);
+}
+
+
+/* LOGIN LINK */
+
+.login-link {
+    text-align: center;
+    margin-top: 22px;
+    font-size: 12px;
+    color: #7c878d;
+}
+
+.login-link a {
+    color: #008f8a;
+    text-decoration: none;
+    font-weight: 700;
+    margin-left: 4px;
+}
+
+.login-link a:hover {
+    text-decoration: underline;
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 1000px) {
+
+    .register-left {
+        padding: 35px;
+    }
+
+    .register-right {
+        padding: 35px;
+    }
+
+    .left-content {
+        margin-top: 80px;
+    }
+
+    .left-content h1 {
+        font-size: 36px;
+    }
+
+}
+
+
+@media (max-width: 800px) {
+
+    .register-container {
+        display: block;
+    }
+
+    .register-left {
+        display: none;
+    }
+
+    .register-right {
+        width: 100%;
+        min-height: 100vh;
+        padding: 35px 25px;
+        align-items: flex-start;
+    }
+
+    .mobile-brand {
+        display: flex;
+    }
+
+    .register-form-container {
+        max-width: 600px;
+        margin: auto;
+    }
+
+}
+
+
+@media (max-width: 520px) {
+
+    .register-right {
+        padding: 25px 18px;
+    }
+
+    .form-heading h2 {
+        font-size: 27px;
+    }
+
+    .two-column {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .role-selection {
+        grid-template-columns: 1fr;
+    }
+
+    .role-option {
+        height: 44px;
+    }
+
+    .password-strength {
+        display: block;
+    }
+
+    .password-strength > span {
+        display: block;
+        margin-top: 4px;
+    }
+
+}

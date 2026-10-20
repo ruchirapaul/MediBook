@@ -1,0 +1,432 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Appointment - MediBook</title>
+
+    <link rel="stylesheet" href="../css/appointment.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<header class="navbar">
+    <div class="nav-container">
+        <a href="../index.html" class="logo">
+            <span class="logo-icon">
+                <i class="fa-solid fa-heart-pulse"></i>
+            </span>
+            <span>Medi<span>Book</span></span>
+        </a>
+
+        <nav class="nav-links">
+            <a href="../index.html"><i class="fa-solid fa-house"></i> Home</a>
+            <a href="doctors.html"><i class="fa-solid fa-user-doctor"></i> Doctors</a>
+            <a href="../index.html#services"><i class="fa-solid fa-stethoscope"></i> Services</a>
+            <a href="about.html"><i class="fa-solid fa-circle-info"></i> About</a>
+        </nav>
+
+        <!-- Changes depending on login status -->
+        <div class="nav-buttons" id="navButtons">
+            <a href="login.html" class="login-btn">Login</a>
+            <a href="register.html" class="register-btn">Register</a>
+        </div>
+    </div>
+</header>
+
+<!-- HERO -->
+<section class="appointment-hero">
+    <div class="hero-badge">
+        <i class="fa-solid fa-calendar-check"></i>
+        APPOINTMENT
+    </div>
+
+    <h1>Book Your Appointment</h1>
+    <p>Schedule a consultation with our healthcare professionals.</p>
+</section>
+
+<!-- APPOINTMENT SECTION -->
+<main class="appointment-section">
+    <div class="appointment-container">
+
+        <!-- LEFT SIDEBAR -->
+        <aside class="doctor-sidebar">
+            <div class="sidebar-card">
+
+                <div class="doctor-card-header">
+                    <div class="doctor-avatar">
+                        <i class="fa-solid fa-user-doctor"></i>
+                    </div>
+
+                    <div>
+                        <span class="verified">
+                            <i class="fa-solid fa-circle-check"></i>
+                            Verified Doctor
+                        </span>
+
+                        <h2 id="selectedDoctorName">Select a Doctor</h2>
+                        <p id="selectedDoctorSpecialization">
+                            Choose a doctor for your appointment
+                        </p>
+                    </div>
+                </div>
+
+                <div class="doctor-rating">
+                    <span>
+                        <i class="fa-solid fa-star"></i>
+                        <strong>4.9</strong> Rating
+                    </span>
+
+                    <span>
+                        <i class="fa-solid fa-briefcase"></i>
+                        <strong id="selectedDoctorExperience">--</strong>
+                    </span>
+                </div>
+
+                <div class="sidebar-divider"></div>
+
+                <div class="appointment-info">
+                    <h3>
+                        <i class="fa-solid fa-circle-info"></i>
+                        Appointment Information
+                    </h3>
+
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fa-regular fa-clock"></i>
+                        </div>
+                        <div>
+                            <strong>Consultation Duration</strong>
+                            <p>Approximately 30 minutes</p>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fa-solid fa-video"></i>
+                        </div>
+                        <div>
+                            <strong>Consultation Mode</strong>
+                            <p>Online or In-Person</p>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fa-solid fa-bell"></i>
+                        </div>
+                        <div>
+                            <strong>Appointment Reminder</strong>
+                            <p>You will receive a reminder before your appointment.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="fee-box">
+                    <div>
+                        <span>Consultation Fee</span>
+                        <strong>₹800</strong>
+                    </div>
+                    <i class="fa-solid fa-indian-rupee-sign"></i>
+                </div>
+            </div>
+        </aside>
+
+        <!-- RIGHT FORM -->
+        <section class="appointment-form-section">
+            <div class="form-heading">
+                <span class="form-label">APPOINTMENT DETAILS</span>
+                <h2>Appointment Details</h2>
+                <p>Please provide the required information to schedule your appointment.</p>
+            </div>
+
+            <form id="appointmentForm">
+
+                <!-- DOCTOR -->
+                <div class="form-group">
+                    <label for="doctor">
+                        <i class="fa-solid fa-user-doctor"></i>
+                        Select Doctor <span>*</span>
+                    </label>
+
+                    <select id="doctor" name="doctorId" required>
+                        <option value="">Loading doctors...</option>
+                    </select>
+                </div>
+
+                <!-- PATIENT NAME -->
+                <div class="form-group">
+                    <label for="patientName">
+                        <i class="fa-solid fa-user"></i>
+                        Patient Name <span>*</span>
+                    </label>
+
+                    <input type="text"
+                           id="patientName"
+                           name="patientName"
+                           placeholder="Enter your full name"
+                           autocomplete="name"
+                           required>
+                </div>
+
+                <!-- EMAIL -->
+                <div class="form-group">
+                    <label for="email">
+                        <i class="fa-solid fa-envelope"></i>
+                        Email Address <span>*</span>
+                    </label>
+
+                    <input type="email"
+                           id="email"
+                           name="email"
+                           placeholder="Enter your registered email"
+                           autocomplete="email"
+                           required>
+                </div>
+
+                <!-- PHONE -->
+                <div class="form-group">
+                    <label for="phone">
+                        <i class="fa-solid fa-phone"></i>
+                        Phone Number <span>*</span>
+                    </label>
+
+                    <input type="tel"
+                           id="phone"
+                           name="phone"
+                           placeholder="Enter 10-digit phone number"
+                           inputmode="numeric"
+                           pattern="[0-9]{10}"
+                           maxlength="10"
+                           autocomplete="tel"
+                           required>
+                </div>
+
+                <!-- DATE AND TIME -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="date">
+                            <i class="fa-solid fa-calendar"></i>
+                            Appointment Date <span>*</span>
+                        </label>
+
+                        <input type="date"
+                               id="date"
+                               name="date"
+                               required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="time">
+                            <i class="fa-solid fa-clock"></i>
+                            Preferred Time <span>*</span>
+                        </label>
+
+                        <select id="time" name="time" required>
+                            <option value="">Select Time</option>
+                            <option value="09:00">09:00 AM</option>
+                            <option value="10:00">10:00 AM</option>
+                            <option value="11:00">11:00 AM</option>
+                            <option value="12:00">12:00 PM</option>
+                            <option value="14:00">02:00 PM</option>
+                            <option value="15:00">03:00 PM</option>
+                            <option value="16:00">04:00 PM</option>
+                            <option value="17:00">05:00 PM</option>
+                            <option value="18:00">06:00 PM</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- CONSULTATION MODE -->
+                <div class="form-group">
+                    <label>
+                        <i class="fa-solid fa-video"></i>
+                        Consultation Mode <span>*</span>
+                    </label>
+
+                    <div class="mode-options">
+                        <label class="mode-card">
+                            <input type="radio"
+                                   name="mode"
+                                   value="In-Person"
+                                   checked>
+
+                            <span class="mode-content">
+                                <i class="fa-solid fa-hospital"></i>
+                                <span>
+                                    <strong>In-Person</strong>
+                                    <small>Visit the clinic</small>
+                                </span>
+                            </span>
+                        </label>
+
+                        <label class="mode-card">
+                            <input type="radio"
+                                   name="mode"
+                                   value="Online">
+
+                            <span class="mode-content">
+                                <i class="fa-solid fa-video"></i>
+                                <span>
+                                    <strong>Online</strong>
+                                    <small>Video consultation</small>
+                                </span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- REASON -->
+                <div class="form-group">
+                    <label for="reason">
+                        <i class="fa-solid fa-comment-medical"></i>
+                        Reason for Visit <span>*</span>
+                    </label>
+
+                    <textarea id="reason"
+                              name="reason"
+                              rows="4"
+                              maxlength="500"
+                              placeholder="Briefly describe the reason for your appointment..."
+                              required></textarea>
+                </div>
+
+                <!-- TERMS -->
+                <div class="terms">
+                    <label>
+                        <input type="checkbox" id="terms" required>
+                        <span>
+                            I confirm that the information provided is correct
+                            and I agree to the appointment terms and conditions.
+                        </span>
+                    </label>
+                </div>
+
+                <!-- SUBMIT -->
+                <button type="submit" class="confirm-btn" id="confirmButton">
+                    <span>
+                        <i class="fa-solid fa-calendar-check"></i>
+                        Confirm Appointment
+                    </span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+
+                <p id="formMessage"
+                   role="status"
+                   aria-live="polite"></p>
+
+            </form>
+        </section>
+    </div>
+</main>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <div class="footer-container">
+        <div class="footer-brand">
+            <div class="footer-logo">
+                <i class="fa-solid fa-heart-pulse"></i>
+                MediBook
+            </div>
+            <p>Your trusted healthcare appointment platform.</p>
+        </div>
+
+        <div class="footer-links">
+            <a href="../index.html">Home</a>
+            <a href="doctors.html">Doctors</a>
+            <a href="about.html">About</a>
+            <a href="../index.html#services">Services</a>
+        </div>
+    </div>
+
+    <div class="footer-bottom">
+        © 2026 MediBook. All rights reserved.
+    </div>
+</footer>
+
+<!-- NAVBAR LOGIN STATE -->
+<script>
+"use strict";
+
+document.addEventListener("DOMContentLoaded", function () {
+    const navButtons = document.getElementById("navButtons");
+
+    if (!navButtons) return;
+
+    const loggedIn =
+        localStorage.getItem("medibookLoggedIn") === "true";
+
+    const role = (
+        localStorage.getItem("medibookRole") || ""
+    ).toLowerCase();
+
+    const email = localStorage.getItem("medibookEmail") || "";
+
+    if (loggedIn && role === "patient") {
+        // Try common name keys; fall back to the email prefix.
+        const storedName =
+            localStorage.getItem("medibookUserName") ||
+            localStorage.getItem("medibookName") ||
+            localStorage.getItem("username") ||
+            "";
+
+        let displayName = storedName.trim();
+
+        if (!displayName && email) {
+            displayName = email.split("@")[0];
+        }
+
+        if (!displayName) {
+            displayName = "Patient";
+        }
+
+        navButtons.replaceChildren();
+
+        const welcome = document.createElement("span");
+        welcome.className = "welcome-message";
+        welcome.innerHTML = '<i class="fa-solid fa-circle-user"></i> ';
+
+        const welcomeText = document.createElement("span");
+        welcomeText.textContent = "Welcome, " + displayName + "!";
+
+        welcome.appendChild(welcomeText);
+
+        const logoutButton = document.createElement("button");
+        logoutButton.type = "button";
+        logoutButton.className = "register-btn";
+        logoutButton.innerHTML =
+            '<i class="fa-solid fa-right-from-bracket"></i> Logout';
+
+        logoutButton.addEventListener("click", function () {
+            const confirmed = confirm("Are you sure you want to log out?");
+
+            if (!confirmed) return;
+
+            // Clear authentication and booking-session details.
+            localStorage.removeItem("medibookLoggedIn");
+            localStorage.removeItem("medibookRole");
+            localStorage.removeItem("medibookEmail");
+            localStorage.removeItem("medibookUserName");
+            localStorage.removeItem("medibookName");
+            localStorage.removeItem("username");
+            localStorage.removeItem("medibookSelectedDoctor");
+            localStorage.removeItem("medibookPendingBooking");
+
+            window.location.href = "login.html";
+        });
+
+        navButtons.appendChild(welcome);
+        navButtons.appendChild(logoutButton);
+    }
+});
+</script>
+
+<!-- APPOINTMENT LOGIC: keep only one appointment script -->
+<script src="../js/appointment.js"></script>
+
+</body>
+</html>

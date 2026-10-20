@@ -1,0 +1,228 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Our Doctors - MediBook</title>
+
+    <!-- Google Font -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <!-- Font Awesome -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+    <!-- Doctors CSS -->
+    <link rel="stylesheet" href="../css/doctors.css">
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <header class="navbar">
+        <div class="nav-container">
+
+            <a href="../index.html" class="logo">
+                <div class="logo-icon">
+                    <i class="fa-solid fa-heart-pulse"></i>
+                </div>
+                <span>MediBook</span>
+            </a>
+
+            <nav class="nav-links">
+                <a href="../index.html">
+                    <i class="fa-solid fa-house"></i>
+                    Home
+                </a>
+
+                <a href="doctors.html" class="active">
+                    <i class="fa-solid fa-user-doctor"></i>
+                    Doctors
+                </a>
+
+                <a href="services.html">
+                    <i class="fa-solid fa-stethoscope"></i>
+                    Services
+                </a>
+
+                <a href="about.html">
+                    <i class="fa-solid fa-circle-info"></i>
+                    About
+                </a>
+            </nav>
+
+           
+       <div class="nav-buttons" id="navButtons">
+       <a href="login.html" class="login-btn" id="loginNavBtn">Login</a>
+       <a href="register.html" class="register-btn" id="registerNavBtn">Register</a>
+     </div>
+
+
+        </div>
+    </header>
+
+
+    <!-- HERO SECTION -->
+    <section class="doctors-hero">
+        <div class="hero-content">
+
+            <span class="hero-tag">
+                <i class="fa-solid fa-user-doctor"></i>
+                OUR DOCTORS
+            </span>
+
+            <h1>
+                Find the Right Doctor
+                <span>For Your Healthcare</span>
+            </h1>
+
+            <p>
+                Connect with experienced and verified doctors
+                across different medical specialties.
+            </p>
+
+        </div>
+    </section>
+
+
+    <!-- SEARCH AND FILTER SECTION -->
+    <section class="search-section">
+        <div class="search-container">
+
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+
+                <input
+                    type="text"
+                    id="doctorSearch"
+                    placeholder="Search doctor by name or specialization..."
+                    aria-label="Search doctors"
+                >
+            </div>
+
+            <div class="filter-box">
+                <i class="fa-solid fa-stethoscope"></i>
+
+                <select
+                    id="specializationFilter"
+                    aria-label="Filter by specialization"
+                >
+                    <option value="all">All Specializations</option>
+                    <option value="cardiologist">Cardiology</option>
+                    <option value="dermatologist">Dermatology</option>
+                    <option value="neurologist">Neurology</option>
+                    <option value="orthopedic">Orthopedics</option>
+                    <option value="pediatrician">Pediatrics</option>
+                    <option value="dentist">Dentistry</option>
+                </select>
+            </div>
+
+        </div>
+    </section>
+
+
+    <!-- DOCTORS SECTION -->
+    <main class="doctors-section">
+
+        <div class="section-heading">
+            <div>
+                <span class="section-tag">OUR SPECIALISTS</span>
+                <h2>Meet Our Doctors</h2>
+            </div>
+
+            <p id="doctorCount" aria-live="polite">
+                Loading doctors...
+            </p>
+        </div>
+
+
+        <!-- JavaScript inserts the database doctors here -->
+        <div class="doctors-grid" id="doctorsGrid">
+            <p id="doctorsLoading">Loading doctors...</p>
+        </div>
+
+
+        <!-- NO RESULTS MESSAGE -->
+        <div
+            id="noResults"
+            class="no-results"
+            style="display: none;"
+        >
+            <i class="fa-solid fa-user-doctor"></i>
+
+            <h3>No doctors found</h3>
+
+            <p>
+                Try searching for another doctor
+                or specialization.
+            </p>
+        </div>
+
+    </main>
+
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="footer-container">
+
+            <div class="footer-brand">
+                <div class="footer-logo">
+                    <div class="logo-icon">
+                        <i class="fa-solid fa-heart-pulse"></i>
+                    </div>
+
+                    <span>MediBook</span>
+                </div>
+
+                <p>
+                    Making healthcare accessible,
+                    simple and convenient.
+                </p>
+            </div>
+
+
+            <div class="footer-links">
+                <h4>Quick Links</h4>
+
+                <a href="../index.html">Home</a>
+                <a href="doctors.html">Doctors</a>
+                <a href="services.html">Services</a>
+                <a href="about.html">About</a>
+            </div>
+
+
+            <div class="footer-links">
+                <h4>Contact</h4>
+
+                <p>
+                    <i class="fa-solid fa-envelope"></i>
+                    support@medibook.com
+                </p>
+
+                <p>
+                    <i class="fa-solid fa-phone"></i>
+                    +91 98765 43210
+                </p>
+            </div>
+
+        </div>
+
+        <div class="footer-bottom">
+            <p>© 2026 MediBook. All rights reserved.</p>
+        </div>
+    </footer>
+
+
+    <!-- EXTERNAL JAVASCRIPT -->
+    <script src="../js/doctors.js"></script>
+
+</body>
+</html>
