@@ -1,0 +1,361 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Dashboard | MediBook</title>
+
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+        body { background: #f4f7fc; color: #263449; }
+        .sidebar { width: 240px; height: 100vh; position: fixed; left: 0; top: 0; padding: 28px 18px; background: white; border-right: 1px solid #e5eaf2; }
+        .logo { font-size: 27px; font-weight: bold; color: #1677d2; margin: 0 0 38px 10px; }
+        .nav-link { display: block; padding: 14px 15px; margin-bottom: 8px; border-radius: 9px; color: #59677a; text-decoration: none; cursor: pointer; }
+        .nav-link:hover, .nav-link.active { background: #eaf4ff; color: #1677d2; }
+        .logout { color: #d13d49; }
+        .main { margin-left: 240px; padding: 32px; }
+        .topbar { display: flex; justify-content: space-between; align-items: center; gap: 15px; margin-bottom: 30px; }
+        .topbar h1 { font-size: 27px; margin-bottom: 8px; }
+        .muted { color: #778398; font-size: 14px; line-height: 1.6; }
+        .doctor-badge { background: white; padding: 12px 18px; border-radius: 12px; border: 1px solid #e5eaf2; }
+        .cards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; margin-bottom: 28px; }
+        .card, .section { background: white; border: 1px solid #e5eaf2; border-radius: 14px; }
+        .card { padding: 22px; }
+        .card p { color: #778398; font-size: 14px; }
+        .card h2 { font-size: 30px; margin-top: 15px; }
+        .section { padding: 24px; margin-bottom: 24px; overflow-x: auto; }
+        .section h2 { font-size: 20px; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; min-width: 700px; }
+        th, td { text-align: left; padding: 14px 12px; border-bottom: 1px solid #edf0f5; font-size: 14px; }
+        th { color: #778398; background: #f8faff; }
+        .status { display: inline-block; padding: 6px 10px; border-radius: 20px; background: #fff3d9; color: #956500; font-size: 12px; }
+        .status.Accepted { background: #e0f7e9; color: #187443; }
+        .status.Rejected, .status.Cancelled { background: #fde8e8; color: #b4232f; }
+        .status.Completed { background: #e5edff; color: #2455a4; }
+        .action-btn { border: none; border-radius: 6px; padding: 8px 10px; margin: 2px; cursor: pointer; color: white; }
+        .accept-btn { background: #16834a; }
+        .reject-btn { background: #d13d49; }
+        .action-btn:disabled { opacity: .6; cursor: wait; }
+        .empty { padding: 25px 0; color: #778398; text-align: center; }
+        .message { margin-bottom: 16px; font-size: 14px; line-height: 1.5; overflow-wrap: anywhere; }
+        .profile-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+        .profile-item { background: #f8faff; padding: 16px; border-radius: 9px; overflow-wrap: anywhere; }
+        .profile-item p { color: #778398; font-size: 13px; margin-bottom: 8px; }
+        @media (max-width: 1000px) { .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+        @media (max-width: 650px) {
+            .sidebar { position: static; width: 100%; height: auto; padding: 16px; }
+            .logo { margin: 0 0 15px; }
+            .nav-link { display: inline-block; padding: 10px; margin: 0 3px 5px 0; }
+            .main { margin-left: 0; padding: 20px 14px; }
+            .topbar { align-items: flex-start; flex-direction: column; }
+            .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+            .card { padding: 15px; }
+            .card h2 { font-size: 25px; }
+            .profile-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="logo">MediBook</div>
+        <a class="nav-link active" href="#overview">▦ Dashboard</a>
+        <a class="nav-link" href="#appointments">▣ Appointments</a>
+        <a class="nav-link" href="#profile">♙ My Profile</a>
+        <a class="nav-link" href="#availability">◷ Availability</a>
+        <a class="nav-link logout" href="login.html" onclick="logoutDoctor()">↪ Logout</a>
+    </aside>
+
+    <main class="main">
+        <header class="topbar">
+            <div>
+                <h1 id="welcome">Doctor Dashboard</h1>
+                <p class="muted">Manage your appointments and professional profile.</p>
+            </div>
+            <div class="doctor-badge">🩺 <strong id="doctorName">Doctor</strong></div>
+        </header>
+
+        <p id="pageMessage" class="message muted" role="status">Loading doctor profile...</p>
+
+        <section id="overview">
+            <div class="cards">
+                <div class="card"><p>Total Appointments</p><h2 id="totalAppointments">0</h2></div>
+                <div class="card"><p>Pending Requests</p><h2 id="pendingAppointments">0</h2></div>
+                <div class="card"><p>Accepted Appointments</p><h2 id="acceptedAppointments">0</h2></div>
+                <div class="card"><p>Completed Appointments</p><h2 id="completedAppointments">0</h2></div>
+            </div>
+        </section>
+
+        <section class="section" id="appointments">
+            <h2>Manage Appointments</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Patient</th><th>Date &amp; Time</th><th>Reason</th><th>Status</th><th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="appointmentRows">
+                    <tr><td colspan="5" class="empty">Loading appointments...</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="section" id="profile">
+            <h2>My Professional Profile</h2>
+            <div class="profile-grid">
+                <div class="profile-item"><p>Doctor Name</p><strong id="profileName">Loading...</strong></div>
+                <div class="profile-item"><p>Email</p><strong id="profileEmail">—</strong></div>
+                <div class="profile-item"><p>Specialization</p><strong id="profileSpecialization">Loading...</strong></div>
+                <div class="profile-item"><p>Qualification</p><strong id="profileQualification">Loading...</strong></div>
+                <div class="profile-item"><p>Experience</p><strong id="profileExperience">Loading...</strong></div>
+                <div class="profile-item"><p>Availability</p><strong id="profileAvailability">Loading...</strong></div>
+            </div>
+        </section>
+
+        <section class="section" id="availability">
+            <h2>Availability</h2>
+            <p class="muted" id="availabilityDetails">Loading availability...</p>
+            <p class="muted">Consultation days and timings are displayed from the registered doctor profile where available.</p>
+        </section>
+    </main>
+
+    <script>
+        "use strict";
+
+        const API_URL = "http://localhost:8080";
+        let doctorAppointments = [];
+        let doctorEmail = "";
+
+        function logoutDoctor() {
+            localStorage.removeItem("user");
+            localStorage.removeItem("medibookLoggedIn");
+            localStorage.removeItem("medibookEmail");
+            localStorage.removeItem("medibookRole");
+            localStorage.removeItem("medibookUserName");
+            sessionStorage.removeItem("doctor");
+        }
+
+        function showMessage(message) {
+            document.getElementById("pageMessage").textContent = message;
+        }
+
+        function showTableMessage(message) {
+            const rows = document.getElementById("appointmentRows");
+            rows.replaceChildren();
+            const tr = document.createElement("tr");
+            const td = document.createElement("td");
+            td.colSpan = 5;
+            td.className = "empty";
+            td.textContent = message;
+            tr.appendChild(td);
+            rows.appendChild(tr);
+        }
+
+        function addCell(row, value) {
+            const td = document.createElement("td");
+            td.textContent = value == null || value === "" ? "—" : value;
+            row.appendChild(td);
+        }
+
+        function updateCounts() {
+            document.getElementById("totalAppointments").textContent = doctorAppointments.length;
+            document.getElementById("pendingAppointments").textContent =
+                doctorAppointments.filter(a => a.status === "Pending").length;
+            document.getElementById("acceptedAppointments").textContent =
+                doctorAppointments.filter(a => a.status === "Accepted").length;
+            document.getElementById("completedAppointments").textContent =
+                doctorAppointments.filter(a => a.status === "Completed").length;
+        }
+
+        function renderAppointments() {
+            const rows = document.getElementById("appointmentRows");
+            rows.replaceChildren();
+
+            if (!doctorAppointments.length) {
+                showTableMessage("No appointments found for this doctor yet.");
+                return;
+            }
+
+            doctorAppointments.forEach(appointment => {
+                const tr = document.createElement("tr");
+                addCell(tr, appointment.patientName);
+                addCell(tr, (appointment.date || "—") + " " + (appointment.time || ""));
+                addCell(tr, appointment.reason);
+
+                const statusCell = document.createElement("td");
+                const badge = document.createElement("span");
+                badge.className = "status " + (appointment.status || "Pending");
+                badge.textContent = appointment.status || "Pending";
+                statusCell.appendChild(badge);
+                tr.appendChild(statusCell);
+
+                const actions = document.createElement("td");
+
+                if (appointment.status === "Pending") {
+                    for (const choice of [
+                        { label: "Accept", status: "Accepted", className: "accept-btn" },
+                        { label: "Reject", status: "Rejected", className: "reject-btn" }
+                    ]) {
+                        const button = document.createElement("button");
+                        button.type = "button";
+                        button.className = "action-btn " + choice.className;
+                        button.textContent = choice.label;
+                        button.addEventListener("click", () =>
+                            updateAppointment(appointment.id, choice.status, button)
+                        );
+                        actions.appendChild(button);
+                    }
+                } else {
+                    actions.textContent = "—";
+                }
+
+                tr.appendChild(actions);
+                rows.appendChild(tr);
+            });
+        }
+
+        async function loadAppointments() {
+            try {
+                const response = await fetch(
+                    API_URL + "/api/doctor/appointments?email=" +
+                    encodeURIComponent(doctorEmail)
+                );
+
+                if (!response.ok) throw new Error("HTTP " + response.status);
+
+                const data = await response.json();
+                if (!Array.isArray(data)) throw new Error("Unexpected response");
+
+                doctorAppointments = data;
+                updateCounts();
+                renderAppointments();
+            } catch (error) {
+                console.error("Appointments error:", error);
+                showTableMessage("Could not load appointments. Check the backend and doctor email.");
+                showMessage("Doctor profile loaded, but appointments could not be loaded.");
+            }
+        }
+
+        async function updateAppointment(id, status, button) {
+            button.disabled = true;
+
+            try {
+                const response = await fetch(API_URL + "/api/doctor/appointment-status", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+                    body: new URLSearchParams({
+                        email: doctorEmail,
+                        appointmentId: String(id),
+                        status
+                    })
+                });
+
+                const result = await response.json();
+                if (!response.ok) throw new Error(result.error || "Update failed");
+
+                showMessage("Appointment " + status.toLowerCase() + " successfully.");
+                await loadAppointments();
+            } catch (error) {
+                console.error("Appointment update error:", error);
+                alert(error.message || "Unable to update appointment.");
+                button.disabled = false;
+            }
+        }
+
+        async function loadDoctorProfile() {
+            let user = null;
+
+            try {
+                const saved = localStorage.getItem("user");
+                if (saved) user = JSON.parse(saved);
+            } catch (error) {
+                console.warn("Could not read saved user:", error);
+            }
+
+            // Login page saves these fields separately as well.
+            const email = user?.email || localStorage.getItem("medibookEmail");
+            const role = (user?.role || localStorage.getItem("medibookRole") || "").toLowerCase();
+
+            if (!email || role !== "doctor") {
+                showMessage("Please log in using your doctor account.");
+                document.getElementById("profileName").textContent = "Doctor login required";
+                showTableMessage("Please log in using your doctor account.");
+                return;
+            }
+
+            doctorEmail = email;
+
+            try {
+                const response = await fetch(
+                    API_URL + "/api/doctor/profile?email=" + encodeURIComponent(doctorEmail)
+                );
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(errorText || "Profile request failed.");
+                }
+
+                const doctor = await response.json();
+                const name = doctor.name || user?.name ||
+                    localStorage.getItem("medibookUserName") || "Doctor";
+
+                document.getElementById("doctorName").textContent = name;
+                document.getElementById("welcome").textContent = "Welcome, " + name;
+                document.getElementById("profileName").textContent = name;
+                document.getElementById("profileEmail").textContent = doctor.email || doctorEmail;
+                document.getElementById("profileSpecialization").textContent =
+                    doctor.specialization || "Not available";
+                document.getElementById("profileQualification").textContent =
+                    doctor.qualification || "Not available";
+                document.getElementById("profileExperience").textContent =
+                    doctor.experience == null ? "Not available" : doctor.experience + " years";
+
+                const availability = doctor.available ? "Available" : "Currently unavailable";
+                document.getElementById("profileAvailability").textContent = availability;
+                document.getElementById("availabilityDetails").textContent = availability;
+
+                showMessage("Doctor profile loaded successfully.");
+                await loadAppointments();
+            } catch (error) {
+                console.error("Doctor profile error:", error);
+                showMessage("Could not load doctor profile: " + error.message);
+                document.getElementById("profileName").textContent =
+                    user?.name || localStorage.getItem("medibookUserName") || "Doctor";
+                document.getElementById("profileEmail").textContent = doctorEmail;
+                document.getElementById("profileSpecialization").textContent = "Could not load";
+                document.getElementById("profileQualification").textContent = "Could not load";
+                document.getElementById("profileExperience").textContent = "Could not load";
+                document.getElementById("profileAvailability").textContent = "Could not load";
+            }
+        }
+
+        const navLinks = document.querySelectorAll(".nav-link:not(.logout)");
+        const sections = [
+            document.getElementById("overview"),
+            document.getElementById("appointments"),
+            document.getElementById("profile"),
+            document.getElementById("availability")
+        ];
+
+        function showSection(id) {
+            sections.forEach(section => {
+                section.style.display = section.id === id ? "block" : "none";
+            });
+
+            navLinks.forEach(link => {
+                link.classList.toggle("active", link.getAttribute("href") === "#" + id);
+            });
+        }
+
+        navLinks.forEach(link => {
+            link.addEventListener("click", event => {
+                event.preventDefault();
+                showSection(link.getAttribute("href").substring(1));
+            });
+        });
+
+        showSection("overview");
+        loadDoctorProfile();
+    </script>
+</body>
+</html>

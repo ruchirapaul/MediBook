@@ -14,7 +14,6 @@ function selectRole(role) {
         button.classList.remove("active");
     });
 
-    // Use the clicked button when the browser provides the event.
     if (typeof event !== "undefined" && event.currentTarget) {
         event.currentTarget.classList.add("active");
     }
@@ -22,7 +21,6 @@ function selectRole(role) {
 
 function togglePassword() {
     const passwordInput = document.getElementById("password");
-
     if (!passwordInput) return;
 
     passwordInput.type =
@@ -32,18 +30,9 @@ function togglePassword() {
 async function handleLogin(event) {
     event.preventDefault();
 
-    const emailInput = document.getElementById("email");
-    const passwordInput = document.getElementById("password");
-    const selectedRoleInput = document.getElementById("selectedRole");
-
-    if (!emailInput || !passwordInput || !selectedRoleInput) {
-        alert("Login form fields could not be found. Please check login.html.");
-        return;
-    }
-
-    const email = emailInput.value.trim();
-    const password = passwordInput.value;
-    const role = selectedRoleInput.value;
+    const email = document.getElementById("email")?.value.trim();
+    const password = document.getElementById("password")?.value;
+    const role = document.getElementById("selectedRole")?.value;
 
     if (!email || !password || !role) {
         alert("Please enter your email, password and select your role.");
@@ -57,14 +46,9 @@ async function handleLogin(event) {
                 "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
                 "Accept": "application/json"
             },
-            body: new URLSearchParams({
-                email: email,
-                password: password,
-                role: role
-            })
+            body: new URLSearchParams({ email, password, role })
         });
 
-        // Support JSON success responses and plain-text error responses.
         const responseText = await response.text();
         let result;
 
@@ -80,38 +64,50 @@ async function handleLogin(event) {
         }
 
         if (!result.name || !result.email || !result.role) {
-            console.error("Unexpected login response:", result);
             alert("Login response is incomplete. Please try again.");
+            console.error("Login response:", result);
             return;
         }
 
-        // Save the actual name retrieved from the MySQL users table.
+        const actualRole = result.role.toLowerCase();
+
+        if (actualRole !== role.toLowerCase()) {
+            alert("The selected role does not match your account role.");
+            return;
+        }
+
         localStorage.setItem("medibookLoggedIn", "true");
         localStorage.setItem("medibookEmail", result.email);
-        localStorage.setItem("medibookRole", result.role);
+        localStorage.setItem("medibookRole", actualRole);
         localStorage.setItem("medibookUserName", result.name);
+
+        // Compatibility with the doctor dashboard.
+        localStorage.setItem("user", JSON.stringify({
+            name: result.name,
+            email: result.email,
+            role: actualRole
+        }));
 
         alert(result.message || `Login successful! Welcome, ${result.name}.`);
 
         const pendingBooking =
             localStorage.getItem("medibookPendingBooking") === "true";
 
-        if (
-            pendingBooking &&
-            result.role.toLowerCase() === "patient"
-        ) {
+        if (actualRole === "doctor") {
+            window.location.href = "doctor-dashboard.html";
+        } else if (actualRole === "admin") {
+            window.location.href = "admin-dashboard.html";
+        } else if (pendingBooking) {
             window.location.href = "doctors.html?continueBooking=true";
         } else {
-            window.location.href = "doctors.html";
+            window.location.href = "index.html";
         }
 
     } catch (error) {
         console.error("Login error:", error);
-
         alert(
             "Unable to connect to MediBook. " +
             "Please make sure the Java backend is running on port 8080."
         );
     }
 }
-

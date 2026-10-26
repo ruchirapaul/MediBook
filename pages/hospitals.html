@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediBook | Find Hospitals</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Inter, sans-serif;
+            background: #f5f8fc;
+            color: #172b4d;
+        }
+
+        nav {
+            background: white;
+            padding: 18px 7%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 2px 12px #172b4d0d;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #087f8c;
+        }
+
+        nav a {
+            color: #334155;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        header {
+            text-align: center;
+            padding: 55px 20px;
+            background: #e5f7f7;
+        }
+
+        header h1 {
+            margin: 0 0 12px;
+            font-size: clamp(28px, 5vw, 40px);
+        }
+
+        header p {
+            color: #526477;
+        }
+
+        .search {
+            display: flex;
+            gap: 10px;
+            max-width: 650px;
+            margin: 25px auto 0;
+        }
+
+        input {
+            flex: 1;
+            min-width: 0;
+            padding: 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 9px;
+            font: inherit;
+        }
+
+        button {
+            padding: 13px 18px;
+            border: 0;
+            border-radius: 9px;
+            background: #087f8c;
+            color: white;
+            font: inherit;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        button:disabled {
+            opacity: 0.65;
+            cursor: wait;
+        }
+
+        main {
+            max-width: 1100px;
+            margin: 35px auto;
+            padding: 0 20px;
+        }
+
+        #hospitalList {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        .hospital {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 15px;
+            padding: 24px;
+            box-shadow: 0 5px 18px #172b4d08;
+            min-width: 0;
+            overflow-wrap: anywhere;
+        }
+
+        .hospital-icon {
+            font-size: 35px;
+        }
+
+        .hospital h2 {
+            font-size: 20px;
+            margin: 14px 0 8px;
+        }
+
+        .hospital p {
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        .hospital button {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .map-link {
+            display: block;
+            margin-top: 15px;
+            color: #087f8c;
+            text-align: center;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        #message {
+            text-align: center;
+            color: #64748b;
+            padding: 25px;
+        }
+
+        .doctor-list {
+            margin-top: 16px;
+            overflow-wrap: anywhere;
+        }
+
+        .demo-notice {
+            padding: 12px;
+            background: #fff7ed;
+            color: #9a3412 !important;
+            border: 1px solid #fed7aa;
+            border-radius: 8px;
+            font-size: 13px;
+        }
+
+        .doctor-item {
+            border-top: 1px solid #e2e8f0;
+            padding: 12px 0;
+        }
+
+        .doctor-item h3 {
+            margin-bottom: 8px;
+            font-size: 17px;
+        }
+
+        .doctor-item p {
+            margin: 7px 0;
+            font-size: 14px;
+        }
+
+        @media (max-width: 480px) {
+            nav {
+                padding: 16px;
+            }
+
+            .search {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <div class="logo">✚ MediBook</div>
+        <a href="../index.html">Home</a>
+    </nav>
+
+    <header>
+        <h1>Find the Right Hospital 🏥</h1>
+        <p>Search hospitals by name, city, area or state.</p>
+
+        <div class="search">
+            <input
+                id="searchInput"
+                type="search"
+                placeholder="Enter hospital name or area..."
+                aria-label="Search hospitals"
+            >
+            <button type="button" id="searchButton">Search</button>
+        </div>
+    </header>
+
+    <main>
+        <h2>Hospitals</h2>
+        <p id="message" role="status">Loading hospitals...</p>
+        <div id="hospitalList"></div>
+    </main>
+
+    <script>
+        const API_URL = "http://localhost:8080";
+
+        // Identify the three hospitals connected to
+        // the internal hospital_doctors database table.
+        function getKnownHospitalId(hospital) {
+            const name = String(hospital.name || "")
+                .trim()
+                .toLowerCase()
+                .replace(/[^a-z0-9]/g, "");
+
+            const location = [
+                hospital.address,
+                hospital.city,
+                hospital.state,
+                hospital.district
+            ]
+                .filter(Boolean)
+                .join(" ")
+                .toLowerCase();
+
+            if (
+                name.includes("apollo") &&
+                (
+                    location.includes("chennai") ||
+                    location.includes("greams") ||
+                    location.includes("tamil nadu") ||
+                    location.includes("tamilnadu")
+                )
+            ) {
+                return 1;
+            }
+
+            if (
+                name.includes("miot") &&
+                (
+                    location.includes("chennai") ||
+                    location.includes("manapakkam") ||
+                    location.includes("tamil nadu") ||
+                    location.includes("tamilnadu")
+                )
+            ) {
+                return 2;
+            }
+
+            if (
+                name.includes("fortis") &&
+                (
+                    name.includes("malar") ||
+                    location.includes("adyar") ||
+                    location.includes("chennai")
+                )
+            ) {
+                return 3;
+            }
+
+            return null;
+        }
+
+        async function searchHospitals() {
+            const query = document
+                .getElementById("searchInput")
+                .value.trim();
+
+            const container = document.getElementById("hospitalList");
+            const message = document.getElementById("message");
+            const searchButton = document.getElementById("searchButton");
+
+            if (!query) {
+                message.textContent =
+                    "Enter a hospital name, city or area to search.";
+                container.replaceChildren();
+                return;
+            }
+
+            message.textContent = "Searching hospitals...";
+            container.replaceChildren();
+            searchButton.disabled = true;
+
+            try {
+                const response = await fetch(
+                    `${API_URL}/api/hospitals/search?q=${encodeURIComponent(query)}`
+                );
+
+                if (!response.ok) {
+                    throw new Error(
+                        "Hospital search failed: " + response.status
+                    );
+                }
+
+                const hospitals = await response.json();
+                renderHospitals(hospitals);
+            } catch (error) {
+                console.error("Hospital search error:", error);
+
+                message.textContent =
+                    "Unable to load hospitals. Please make sure the MediBook backend is running.";
+            } finally {
+                searchButton.disabled = false;
+            }
+        }
+
+        function renderHospitals(hospitals) {
+            const container = document.getElementById("hospitalList");
+            const message = document.getElementById("message");
+
+            container.replaceChildren();
+
+            if (!Array.isArray(hospitals) || hospitals.length === 0) {
+                message.textContent =
+                    "No hospitals found. Try another hospital name or area.";
+                return;
+            }
+
+            message.textContent = hospitals.length + " hospitals found.";
+
+            hospitals.forEach(hospital => {
+                const card = document.createElement("article");
+                card.className = "hospital";
+
+                const icon = document.createElement("div");
+                icon.className = "hospital-icon";
+                icon.textContent = "🏥";
+
+                const title = document.createElement("h2");
+                title.textContent =
+                    hospital.name || "Hospital name unavailable";
+
+                const locationParts = [
+                    hospital.city,
+                    hospital.state
+                ]
+                    .filter(Boolean)
+                    .map(value => String(value).trim());
+
+                const area = document.createElement("p");
+                area.textContent = "📍 " + (
+                    locationParts.length
+                        ? [...new Set(locationParts)].join(", ")
+                        : "Location not available"
+                );
+
+                const address = document.createElement("p");
+                address.textContent =
+                    hospital.address || "Address not available";
+
+                card.append(icon, title, area, address);
+
+                const doctorButton = document.createElement("button");
+                doctorButton.type = "button";
+                doctorButton.textContent = "View Doctors";
+
+                doctorButton.addEventListener("click", async () => {
+                    const existing = card.querySelector(".doctor-list");
+
+                    if (existing) {
+                        existing.remove();
+                        doctorButton.textContent = "View Doctors";
+                        return;
+                    }
+
+                    const knownHospitalId =
+                        getKnownHospitalId(hospital);
+
+                    const isDemo = knownHospitalId === null;
+
+                    doctorButton.disabled = true;
+                    doctorButton.textContent = "Loading doctors...";
+
+                    try {
+                        // Known hospitals use their own linked schedules.
+                        // Other hospitals use clearly labelled demo data.
+                       
+const endpoint = isDemo
+    ? `${API_URL}/api/doctors?state=${encodeURIComponent(hospital.state || "")}`
+    : `${API_URL}/api/hospital-doctors?hospitalId=${knownHospitalId}`;
+
+
+                        const response = await fetch(endpoint);
+
+                        if (!response.ok) {
+                            throw new Error(
+                                "Failed to load doctors: " + response.status
+                            );
+                        }
+
+                        let doctors = await response.json();
+
+                        if (!Array.isArray(doctors)) {
+                            throw new Error("Invalid doctor data received.");
+                        }
+
+                        // Sample schedules are for demonstration only.
+                        if (isDemo) {
+                            const demoSchedules = [
+                                {
+                                    days: "Monday, Wednesday",
+                                    start: "09:00",
+                                    end: "13:00"
+                                },
+                                {
+                                    days: "Tuesday, Thursday",
+                                    start: "10:00",
+                                    end: "14:00"
+                                },
+                                {
+                                    days: "Wednesday, Friday",
+                                    start: "14:00",
+                                    end: "18:00"
+                                },
+                                {
+                                    days: "Monday, Saturday",
+                                    start: "09:00",
+                                    end: "12:00"
+                                }
+                            ];
+
+                            doctors = doctors.map((doctor, index) => {
+                                const schedule =
+                                    demoSchedules[index % demoSchedules.length];
+
+                                return {
+                                    ...doctor,
+                                    available_days: schedule.days,
+                                    start_time: schedule.start,
+                                    end_time: schedule.end,
+                                    consultation_fee: 800
+                                };
+                            });
+                        }
+
+                        const doctorList = document.createElement("div");
+                        doctorList.className = "doctor-list";
+
+                        if (isDemo) {
+                            const notice = document.createElement("p");
+                            notice.className = "demo-notice";
+                            notice.textContent =
+                                "DEMO DATA: These are sample MediBook doctor profiles and example timings. They are not verified staff or actual availability at this hospital.";
+                            doctorList.appendChild(notice);
+                        }
+
+                        if (doctors.length === 0) {
+                            const empty = document.createElement("p");
+                            empty.textContent =
+                                "No doctors are currently listed.";
+                            doctorList.appendChild(empty);
+                        } else {
+                            doctors.forEach(doctor => {
+                                const item = document.createElement("div");
+                                item.className = "doctor-item";
+
+                                const name = document.createElement("h3");
+                                name.textContent =
+                                    doctor.name || "Doctor name unavailable";
+
+                                const specialization = document.createElement("p");
+                                specialization.textContent =
+                                    doctor.specialization ||
+                                    "Specialization not available";
+
+                                const qualification = document.createElement("p");
+                                qualification.textContent =
+                                    "Qualification: " +
+                                    (doctor.qualification || "Not available");
+
+                                const experience = document.createElement("p");
+                                experience.textContent =
+                                    "Experience: " +
+                                    (
+                                        doctor.experience ??
+                                        "Not available"
+                                    ) +
+                                    (
+                                        doctor.experience != null
+                                            ? " years"
+                                            : ""
+                                    );
+
+                                const days = document.createElement("p");
+                                days.textContent =
+                                    "Available days: " +
+                                    (
+                                        doctor.available_days ||
+                                        (isDemo
+                                            ? "Sample schedule"
+                                            : "Not specified")
+                                    );
+
+                                const start = String(
+                                    doctor.start_time || ""
+                                ).slice(0, 5);
+
+                                const end = String(
+                                    doctor.end_time || ""
+                                ).slice(0, 5);
+
+                                const time = document.createElement("p");
+                                time.textContent =
+                                    "Time: " +
+                                    (start || "N/A") +
+                                    " - " +
+                                    (end || "N/A");
+
+                                const fee = document.createElement("p");
+                                fee.textContent =
+                                    "Consultation Fee: ₹" +
+                                    (
+                                        doctor.consultation_fee ??
+                                        "Not available"
+                                    );
+
+                                item.append(
+                                    name,
+                                    specialization,
+                                    qualification,
+                                    experience,
+                                    days,
+                                    time,
+                                    fee
+                                );
+
+                                doctorList.appendChild(item);
+                            });
+                        }
+
+                        card.appendChild(doctorList);
+                        doctorButton.textContent = "Hide Doctors";
+                    } catch (error) {
+                        console.error("Error loading doctors:", error);
+
+                        alert(
+                            "Could not load doctors. Please check that the backend is running."
+                        );
+
+                        doctorButton.textContent = "View Doctors";
+                    } finally {
+                        doctorButton.disabled = false;
+                    }
+                });
+
+                card.appendChild(doctorButton);
+
+                // Google Maps location link.
+                const mapLink = document.createElement("a");
+                mapLink.className = "map-link";
+
+                const locationText = [
+                    hospital.name,
+                    hospital.address,
+                    hospital.city,
+                    hospital.district,
+                    hospital.state,
+                    hospital.pincode
+                ]
+                    .filter(Boolean)
+                    .join(", ");
+
+                const suppliedMapUrl = String(
+                    hospital.map_url || ""
+                ).trim();
+
+                if (/^https?:\/\//i.test(suppliedMapUrl)) {
+                    mapLink.href = suppliedMapUrl;
+                } else {
+                    mapLink.href =
+                        "https://www.google.com/maps/search/?api=1&query=" +
+                        encodeURIComponent(locationText);
+                }
+
+                mapLink.target = "_blank";
+                mapLink.rel = "noopener noreferrer";
+                mapLink.textContent = "View Location & Directions ↗";
+
+                card.appendChild(mapLink);
+                container.appendChild(card);
+            });
+        }
+
+        document
+            .getElementById("searchButton")
+            .addEventListener("click", searchHospitals);
+
+        document
+            .getElementById("searchInput")
+            .addEventListener("keydown", event => {
+                if (event.key === "Enter") {
+                    searchHospitals();
+                }
+            });
+
+        // Display Chennai hospitals when the page first opens.
+        document.getElementById("searchInput").value = "Chennai";
+        searchHospitals();
+    </script>
+</body>
+</html>

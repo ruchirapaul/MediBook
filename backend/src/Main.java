@@ -42,8 +42,17 @@ public class Main {
             server.createContext("/api/register", Main::handleRegister);
             server.createContext("/api/login", Main::handleLogin);
             server.createContext("/api/doctors", Main::handleDoctors);
+            server.createContext("/api/hospitals/search", Main::handleHospitalSearch);
+            server.createContext("/api/hospital-doctors", Main::handleHospitalDoctors);
             server.createContext("/api/appointments",
                     Main::handleAppointments);
+                    server.createContext("/api/doctor/appointments",
+                        Main::handleDoctorAppointments);
+
+            server.createContext("/api/doctor/appointment-status",
+                         Main::handleDoctorAppointmentStatus);
+                         server.createContext("/api/doctor/profile",
+        Main::handleDoctorProfile);
 
             server.start();
             System.out.println("MediBook API Server Started!");
@@ -243,7 +252,101 @@ public class Main {
     }
 
     // GET DOCTORS
-    private static void handleDoctors(
+
+private static void handleDoctors(HttpExchange exchange)
+        throws IOException {
+
+    addCorsHeaders(exchange);
+
+    if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
+        exchange.sendResponseHeaders(204, -1);
+        exchange.close();
+        return;
+    }
+
+    if (!"GET".equalsIgnoreCase(exchange.getRequestMethod())) {
+        sendResponse(exchange, 405, "Only GET method is allowed.");
+        return;
+    }
+
+    String state = null;
+    String rawQuery = exchange.getRequestURI().getRawQuery();
+
+    if (rawQuery != null) {
+        for (String parameter : rawQuery.split("&")) {
+            String[] pair = parameter.split("=", 2);
+
+            if (pair.length == 2 && pair[0].equals("state")) {
+                state = URLDecoder.decode(
+                        pair[1], StandardCharsets.UTF_8).trim();
+                break;
+            }
+        }
+    }
+
+    boolean filterByState = state != null && !state.isEmpty();
+
+    String query =
+            "SELECT id, name, specialization, qualification, "
+            + "experience, available, state FROM doctors "
+            + (filterByState
+                ? "WHERE LOWER(TRIM(state)) = LOWER(TRIM(?)) "
+                : "")
+            + "ORDER BY name";
+
+    try (Connection connection =
+                 DriverManager.getConnection(URL, USER, PASSWORD);
+         PreparedStatement statement =
+                 connection.prepareStatement(query)) {
+
+        if (filterByState) {
+            statement.setString(1, state);
+        }
+
+        try (ResultSet rs = statement.executeQuery()) {
+            StringBuilder json = new StringBuilder("[");
+            boolean first = true;
+
+            while (rs.next()) {
+                if (!first) {
+                    json.append(",");
+                }
+                first = false;
+
+                json.append("{")
+                    .append("\"id\":").append(rs.getInt("id")).append(",")
+                    .append("\"name\":\"")
+                    .append(escapeJson(rs.getString("name"))).append("\",")
+                    .append("\"specialization\":\"")
+                    .append(escapeJson(rs.getString("specialization")))
+                    .append("\",")
+                    .append("\"qualification\":\"")
+                    .append(escapeJson(rs.getString("qualification")))
+                    .append("\",")
+                    .append("\"experience\":")
+                    .append(rs.getInt("experience")).append(",")
+                    .append("\"available\":")
+                    .append(rs.getBoolean("available")).append(",")
+                    .append("\"state\":\"")
+                    .append(escapeJson(rs.getString("state")))
+                    .append("\"")
+                    .append("}");
+            }
+
+            json.append("]");
+            sendJsonResponse(exchange, 200, json.toString());
+        }
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+        sendResponse(exchange, 500, "Could not retrieve doctors.");
+    }
+}
+
+    // CREATE APPOINTMENT
+   
+    // CREATE AND GET APPOINTMENTS
+    private static void handleAppointments(
             HttpExchange exchange) throws IOException {
 
         addCorsHeaders(exchange);
@@ -254,20 +357,26 @@ public class Main {
             return;
         }
 
-        if (!"GET".equalsIgnoreCase(exchange.getRequestMethod())) {
-            sendResponse(exchange, 405, "Only GET method is allowed.");
-            return;
-        }
+        String method = exchange.getRequestMethod();
 
-        try (Connection connection =
-                     DriverManager.getConnection(URL, USER, PASSWORD)) {
+        // GET ALL APPOINTMENTS FOR ADMIN DASHBOARD
+        if ("GET".equalsIgnoreCase(method)) {
 
-            String query =
-                    "SELECT id, name, specialization, qualification, "
-                    + "experience, available FROM doctors";
+            String sql =
+                    "SELECT a.id, u.name AS patient_name, "
+                    + "u.email AS patient_email, d.name AS doctor_name, "
+                    + "a.appointment_date, a.appointment_time, "
+                    + "a.reason, a.status "
+                    + "FROM appointments a "
+                    + "JOIN users u ON a.user_id = u.id "
+                    + "JOIN doctors d ON a.doctor_id = d.id "
+                    + "ORDER BY a.appointment_date DESC, "
+                    + "a.appointment_time DESC";
 
-            try (PreparedStatement statement =
-                         connection.prepareStatement(query);
+            try (Connection connection =
+                         DriverManager.getConnection(URL, USER, PASSWORD);
+                 PreparedStatement statement =
+                         connection.prepareStatement(sql);
                  ResultSet rs = statement.executeQuery()) {
 
                 StringBuilder json = new StringBuilder("[");
@@ -281,45 +390,39 @@ public class Main {
 
                     json.append("{")
                         .append("\"id\":").append(rs.getInt("id")).append(",")
-                        .append("\"name\":\"")
-                        .append(escapeJson(rs.getString("name"))).append("\",")
-                        .append("\"specialization\":\"")
-                        .append(escapeJson(rs.getString("specialization")))
-                        .append("\",")
-                        .append("\"qualification\":\"")
-                        .append(escapeJson(rs.getString("qualification")))
-                        .append("\",")
-                        .append("\"experience\":")
-                        .append(rs.getInt("experience")).append(",")
-                        .append("\"available\":")
-                        .append(rs.getBoolean("available"))
+                        .append("\"patientName\":\"")
+                        .append(escapeJson(rs.getString("patient_name"))).append("\",")
+                        .append("\"patientEmail\":\"")
+                        .append(escapeJson(rs.getString("patient_email"))).append("\",")
+                        .append("\"doctorName\":\"")
+                        .append(escapeJson(rs.getString("doctor_name"))).append("\",")
+                        .append("\"date\":\"")
+                        .append(rs.getDate("appointment_date")).append("\",")
+                        .append("\"time\":\"")
+                        .append(rs.getTime("appointment_time")).append("\",")
+                        .append("\"reason\":\"")
+                        .append(escapeJson(rs.getString("reason"))).append("\",")
+                        .append("\"status\":\"")
+                        .append(escapeJson(rs.getString("status"))).append("\"")
                         .append("}");
                 }
 
                 json.append("]");
                 sendJsonResponse(exchange, 200, json.toString());
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+                sendJsonResponse(exchange, 500,
+                        "{\"error\":\"Could not retrieve appointments.\"}");
             }
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-            sendResponse(exchange, 500, "Could not retrieve doctors.");
-        }
-    }
-
-    // CREATE APPOINTMENT
-    private static void handleAppointments(
-            HttpExchange exchange) throws IOException {
-
-        addCorsHeaders(exchange);
-
-        if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
-            exchange.sendResponseHeaders(204, -1);
-            exchange.close();
             return;
         }
 
-        if (!"POST".equalsIgnoreCase(exchange.getRequestMethod())) {
-            sendResponse(exchange, 405, "Only POST method is allowed.");
+        // KEEP PATIENT APPOINTMENT BOOKING WORKING
+        if (!"POST".equalsIgnoreCase(method)) {
+            sendJsonResponse(exchange, 405,
+                    "{\"error\":\"GET or POST method required.\"}");
             return;
         }
 
@@ -360,6 +463,7 @@ public class Main {
                     sendResponse(exchange, 400, "Invalid doctor ID.");
                     return;
                 }
+
             } catch (Exception e) {
                 sendResponse(exchange, 400,
                         "Invalid doctor ID, appointment date or time.");
@@ -379,7 +483,7 @@ public class Main {
             try (Connection connection =
                          DriverManager.getConnection(URL, USER, PASSWORD)) {
 
-                // Find patient ID
+                // Find patient account
                 int userId;
 
                 String patientQuery =
@@ -442,7 +546,7 @@ public class Main {
                     }
                 }
 
-                // Insert appointment
+                // Save appointment
                 String insertQuery =
                         "INSERT INTO appointments "
                         + "(user_id, doctor_id, appointment_date, "
@@ -468,12 +572,13 @@ public class Main {
                                 "Appointment could not be saved.");
                     }
                 }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+                sendResponse(exchange, 500,
+                        "Database error while booking appointment.");
             }
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-            sendResponse(exchange, 500,
-                    "Database error while booking appointment.");
         } catch (Exception e) {
             e.printStackTrace();
             sendResponse(exchange, 500,
@@ -598,4 +703,497 @@ public class Main {
                 .replace("\r", "\\r")
                 .replace("\t", "\\t");
     }
+    
+   
+    // SEARCH HOSPITALS FROM MYSQL
+    private static void handleHospitalSearch(HttpExchange exchange)
+            throws IOException {
+
+        addCorsHeaders(exchange);
+
+        if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
+            exchange.sendResponseHeaders(204, -1);
+            exchange.close();
+            return;
+        }
+
+        if (!"GET".equalsIgnoreCase(exchange.getRequestMethod())) {
+            sendJsonResponse(exchange, 405,
+                    "{\"error\":\"Method not allowed\"}");
+            return;
+        }
+
+        String query = "";
+        String rawQuery = exchange.getRequestURI().getRawQuery();
+
+        if (rawQuery != null) {
+            for (String parameter : rawQuery.split("&")) {
+                String[] pair = parameter.split("=", 2);
+
+                if (pair.length == 2 && pair[0].equals("q")) {
+                    query = URLDecoder.decode(
+                            pair[1], StandardCharsets.UTF_8);
+                    break;
+                }
+            }
+        }
+
+        if (query.trim().isEmpty()) {
+            sendJsonResponse(exchange, 200, "[]");
+            return;
+        }
+
+        String sql =
+                "SELECT Sr_No AS id, "
+                + "Hospital_Name AS name, "
+                + "Address_Original_First_Line AS address, "
+                + "Location AS city, "
+                + "State AS state, "
+                + "District AS district, "
+                + "Pincode AS pincode, "
+                + "CASE "
+                + "WHEN NULLIF(TRIM(Telephone), '') IS NOT NULL "
+                + "AND TRIM(Telephone) <> '0' THEN TRIM(Telephone) "
+                + "WHEN NULLIF(TRIM(Mobile_Number), '') IS NOT NULL "
+                + "AND TRIM(Mobile_Number) <> '0' THEN TRIM(Mobile_Number) "
+                + "ELSE '' END AS phone "
+                + "FROM hospital_directory "
+                + "WHERE Hospital_Name LIKE ? "
+                + "OR Location LIKE ? "
+                + "OR State LIKE ? "
+                + "OR District LIKE ? "
+                + "OR Address_Original_First_Line LIKE ? "
+                + "OR Pincode LIKE ? "
+                + "ORDER BY Hospital_Name LIMIT 50";
+
+        try (Connection con =
+                     DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            String search = "%" + query.trim() + "%";
+
+            for (int i = 1; i <= 6; i++) {
+                ps.setString(i, search);
+            }
+
+            try (ResultSet rs = ps.executeQuery()) {
+                StringBuilder json = new StringBuilder("[");
+                boolean first = true;
+
+                while (rs.next()) {
+                    if (!first) {
+                        json.append(",");
+                    }
+
+                    String name = rs.getString("name");
+                    String address = rs.getString("address");
+                    String city = rs.getString("city");
+                    String state = rs.getString("state");
+                    String district = rs.getString("district");
+                    String pincode = rs.getString("pincode");
+                    String phone = rs.getString("phone");
+
+                    String mapSearch =
+                            String.join(" ",
+                                    safeText(name),
+                                    safeText(address),
+                                    safeText(city),
+                                    safeText(district),
+                                    safeText(state),
+                                    safeText(pincode)).trim();
+
+                    String mapUrl =
+                            "https://www.google.com/maps/search/?api=1&query="
+                            + java.net.URLEncoder.encode(
+                                    mapSearch, StandardCharsets.UTF_8);
+
+                    json.append("{")
+                            .append("\"id\":").append(rs.getInt("id")).append(",")
+                            .append("\"name\":\"")
+                            .append(escapeJson(name)).append("\",")
+                            .append("\"address\":\"")
+                            .append(escapeJson(address)).append("\",")
+                            .append("\"city\":\"")
+                            .append(escapeJson(city)).append("\",")
+                            .append("\"state\":\"")
+                            .append(escapeJson(state)).append("\",")
+                            .append("\"district\":\"")
+                            .append(escapeJson(district)).append("\",")
+                            .append("\"pincode\":\"")
+                            .append(escapeJson(pincode)).append("\",")
+                            .append("\"phone\":\"")
+                            .append(escapeJson(phone)).append("\",")
+                            .append("\"map_url\":\"")
+                            .append(escapeJson(mapUrl)).append("\"")
+                            .append("}");
+
+                    first = false;
+                }
+
+                json.append("]");
+                sendJsonResponse(exchange, 200, json.toString());
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            sendJsonResponse(exchange, 500,
+                    "{\"error\":\"Hospital search failed\"}");
+        }
+    }
+
+    private static String safeText(String value) {
+        return value == null ? "" : value.trim();
+    }
+
+    // GET DOCTORS AVAILABLE AT A HOSPITAL
+private static void handleHospitalDoctors(HttpExchange exchange)
+        throws IOException {
+
+    addCorsHeaders(exchange);
+
+    if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
+        exchange.sendResponseHeaders(204, -1);
+        return;
+    }
+
+    if (!"GET".equalsIgnoreCase(exchange.getRequestMethod())) {
+        sendResponse(exchange, 405,
+                "{\"error\":\"Method not allowed\"}");
+        return;
+    }
+
+    String query = exchange.getRequestURI().getRawQuery();
+    int hospitalId = -1;
+
+    if (query != null) {
+        for (String parameter : query.split("&")) {
+            String[] pair = parameter.split("=", 2);
+
+            if (pair.length == 2 && pair[0].equals("hospitalId")) {
+                try {
+                    hospitalId = Integer.parseInt(pair[1]);
+                } catch (NumberFormatException e) {
+                    hospitalId = -1;
+                }
+            }
+        }
+    }
+
+    if (hospitalId < 1) {
+        sendResponse(exchange, 400,
+                "{\"error\":\"Valid hospitalId is required\"}");
+        return;
+    }
+
+    String sql = "SELECT d.id, d.name, d.specialization, "
+            + "d.qualification, d.experience, "
+            + "hd.available_days, hd.start_time, hd.end_time, "
+            + "hd.consultation_fee "
+            + "FROM hospital_doctors hd "
+            + "JOIN doctors d ON hd.doctor_id = d.id "
+            + "WHERE hd.hospital_id = ? "
+            + "ORDER BY d.name";
+
+    try (Connection con = DriverManager.getConnection(URL, USER, PASSWORD);
+         PreparedStatement ps = con.prepareStatement(sql)) {
+
+        ps.setInt(1, hospitalId);
+
+        try (ResultSet rs = ps.executeQuery()) {
+            StringBuilder json = new StringBuilder("[");
+            boolean first = true;
+
+            while (rs.next()) {
+                if (!first) {
+                    json.append(",");
+                }
+
+                json.append("{")
+                    .append("\"id\":").append(rs.getInt("id")).append(",")
+                    .append("\"name\":\"")
+                    .append(escapeJson(rs.getString("name"))).append("\",")
+                    .append("\"specialization\":\"")
+                    .append(escapeJson(rs.getString("specialization"))).append("\",")
+                    .append("\"qualification\":\"")
+                    .append(escapeJson(rs.getString("qualification"))).append("\",")
+                    .append("\"experience\":").append(rs.getInt("experience")).append(",")
+                    .append("\"available_days\":\"")
+                    .append(escapeJson(rs.getString("available_days"))).append("\",")
+                    .append("\"start_time\":\"")
+                    .append(escapeJson(String.valueOf(rs.getTime("start_time")))).append("\",")
+                    .append("\"end_time\":\"")
+                    .append(escapeJson(String.valueOf(rs.getTime("end_time")))).append("\",")
+                    .append("\"consultation_fee\":")
+                    .append(rs.getInt("consultation_fee"))
+                    .append("}");
+
+                first = false;
+            }
+
+            json.append("]");
+            sendResponse(exchange, 200, json.toString());
+        }
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+        sendResponse(exchange, 500,
+                "{\"error\":\"Unable to load hospital doctors\"}");
+    }
+}
+// GET APPOINTMENTS FOR A DOCTOR
+private static void handleDoctorAppointments(HttpExchange exchange)
+        throws IOException {
+
+    addCorsHeaders(exchange);
+
+    if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
+        exchange.sendResponseHeaders(204, -1);
+        exchange.close();
+        return;
+    }
+
+    if (!"GET".equalsIgnoreCase(exchange.getRequestMethod())) {
+        sendJsonResponse(exchange, 405,
+                "{\"error\":\"GET method required\"}");
+        return;
+    }
+
+    String email = "";
+    String query = exchange.getRequestURI().getRawQuery();
+
+    if (query != null) {
+        for (String part : query.split("&")) {
+            String[] pair = part.split("=", 2);
+            if (pair.length == 2 && pair[0].equals("email")) {
+                email = URLDecoder.decode(
+                        pair[1], StandardCharsets.UTF_8);
+            }
+        }
+    }
+
+    if (email.trim().isEmpty()) {
+        sendJsonResponse(exchange, 400,
+                "{\"error\":\"Doctor email is required\"}");
+        return;
+    }
+
+    String sql =
+            "SELECT a.id, u.name AS patient_name, "
+            + "u.email AS patient_email, a.appointment_date, "
+            + "a.appointment_time, a.reason, a.status "
+            + "FROM appointments a "
+            + "JOIN users u ON a.user_id = u.id "
+            + "JOIN doctors d ON a.doctor_id = d.id "
+            + "WHERE d.email = ? "
+            + "ORDER BY a.appointment_date DESC, a.appointment_time DESC";
+
+    try (Connection con =
+                 DriverManager.getConnection(URL, USER, PASSWORD);
+         PreparedStatement ps = con.prepareStatement(sql)) {
+
+        ps.setString(1, email.trim());
+
+        try (ResultSet rs = ps.executeQuery()) {
+            StringBuilder json = new StringBuilder("[");
+            boolean first = true;
+
+            while (rs.next()) {
+                if (!first) {
+                    json.append(",");
+                }
+
+                json.append("{")
+                    .append("\"id\":").append(rs.getInt("id")).append(",")
+                    .append("\"patientName\":\"")
+                    .append(escapeJson(rs.getString("patient_name"))).append("\",")
+                    .append("\"patientEmail\":\"")
+                    .append(escapeJson(rs.getString("patient_email"))).append("\",")
+                    .append("\"date\":\"")
+                    .append(rs.getDate("appointment_date")).append("\",")
+                    .append("\"time\":\"")
+                    .append(rs.getTime("appointment_time")).append("\",")
+                    .append("\"reason\":\"")
+                    .append(escapeJson(rs.getString("reason"))).append("\",")
+                    .append("\"status\":\"")
+                    .append(escapeJson(rs.getString("status"))).append("\"")
+                    .append("}");
+
+                first = false;
+            }
+
+            json.append("]");
+            sendJsonResponse(exchange, 200, json.toString());
+        }
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+        sendJsonResponse(exchange, 500,
+                "{\"error\":\"Unable to load appointments\"}");
+    }
+}
+
+
+// ACCEPT OR REJECT A DOCTOR'S APPOINTMENT
+private static void handleDoctorAppointmentStatus(HttpExchange exchange)
+        throws IOException {
+
+    addCorsHeaders(exchange);
+
+    if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
+        exchange.sendResponseHeaders(204, -1);
+        exchange.close();
+        return;
+    }
+
+    if (!"POST".equalsIgnoreCase(exchange.getRequestMethod())) {
+        sendJsonResponse(exchange, 405,
+                "{\"error\":\"POST method required\"}");
+        return;
+    }
+
+    Map<String, String> data =
+            parseFormData(readRequestBody(exchange));
+
+    String email = data.get("email");
+    String appointmentIdText = data.get("appointmentId");
+    String status = data.get("status");
+
+    if (isEmpty(email) || isEmpty(appointmentIdText)
+            || isEmpty(status)) {
+        sendJsonResponse(exchange, 400,
+                "{\"error\":\"Email, appointment ID and status are required\"}");
+        return;
+    }
+
+    if (!status.equals("Accepted") && !status.equals("Rejected")) {
+        sendJsonResponse(exchange, 400,
+                "{\"error\":\"Status must be Accepted or Rejected\"}");
+        return;
+    }
+
+    int appointmentId;
+
+    try {
+        appointmentId = Integer.parseInt(appointmentIdText);
+        if (appointmentId <= 0) {
+            throw new NumberFormatException();
+        }
+    } catch (NumberFormatException e) {
+        sendJsonResponse(exchange, 400,
+                "{\"error\":\"Invalid appointment ID\"}");
+        return;
+    }
+
+    String sql =
+            "UPDATE appointments a "
+            + "JOIN doctors d ON a.doctor_id = d.id "
+            + "SET a.status = ? "
+            + "WHERE a.id = ? AND d.email = ? "
+            + "AND a.status = 'Pending'";
+
+    try (Connection con =
+                 DriverManager.getConnection(URL, USER, PASSWORD);
+         PreparedStatement ps = con.prepareStatement(sql)) {
+
+        ps.setString(1, status);
+        ps.setInt(2, appointmentId);
+        ps.setString(3, email.trim());
+
+        int updated = ps.executeUpdate();
+
+        if (updated > 0) {
+            sendJsonResponse(exchange, 200,
+                    "{\"message\":\"Appointment status updated\","
+                    + "\"status\":\"" + status + "\"}");
+        } else {
+            sendJsonResponse(exchange, 404,
+                    "{\"error\":\"Pending appointment not found for this doctor\"}");
+        }
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+        sendJsonResponse(exchange, 500,
+                "{\"error\":\"Unable to update appointment status\"}");
+    }
+}
+
+private static void handleDoctorProfile(HttpExchange exchange)
+        throws IOException {
+
+    addCorsHeaders(exchange);
+
+    if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
+        exchange.sendResponseHeaders(204, -1);
+        exchange.close();
+        return;
+    }
+
+    if (!"GET".equalsIgnoreCase(exchange.getRequestMethod())) {
+        sendJsonResponse(exchange, 405,
+                "{\"error\":\"GET method required\"}");
+        return;
+    }
+
+    String email = "";
+    String rawQuery = exchange.getRequestURI().getRawQuery();
+
+    if (rawQuery != null) {
+        for (String part : rawQuery.split("&")) {
+            String[] pair = part.split("=", 2);
+
+            if (pair.length == 2 && pair[0].equals("email")) {
+                email = URLDecoder.decode(
+                        pair[1], StandardCharsets.UTF_8);
+                break;
+            }
+        }
+    }
+
+    if (email.trim().isEmpty()) {
+        sendJsonResponse(exchange, 400,
+                "{\"error\":\"Doctor email is required\"}");
+        return;
+    }
+
+    String sql = "SELECT id, name, email, specialization, "
+            + "qualification, experience, available, state "
+            + "FROM doctors WHERE LOWER(TRIM(email)) = LOWER(TRIM(?)) "
+            + "LIMIT 1";
+
+    try (Connection con = DriverManager.getConnection(URL, USER, PASSWORD);
+         PreparedStatement ps = con.prepareStatement(sql)) {
+
+        ps.setString(1, email.trim());
+
+        try (ResultSet rs = ps.executeQuery()) {
+            if (!rs.next()) {
+                sendJsonResponse(exchange, 404,
+                        "{\"error\":\"Doctor profile not found. "
+                        + "Check that the login email matches the doctors table.\"}");
+                return;
+            }
+
+            String json = "{"
+                    + "\"id\":" + rs.getInt("id") + ","
+                    + "\"name\":\"" + escapeJson(rs.getString("name")) + "\","
+                    + "\"email\":\"" + escapeJson(rs.getString("email")) + "\","
+                    + "\"specialization\":\""
+                    + escapeJson(rs.getString("specialization")) + "\","
+                    + "\"qualification\":\""
+                    + escapeJson(rs.getString("qualification")) + "\","
+                    + "\"experience\":" + rs.getInt("experience") + ","
+                    + "\"available\":" + rs.getBoolean("available") + ","
+                    + "\"state\":\"" + escapeJson(rs.getString("state")) + "\""
+                    + "}";
+
+            sendJsonResponse(exchange, 200, json);
+        }
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+        sendJsonResponse(exchange, 500,
+                "{\"error\":\"Unable to load doctor profile\"}");
+    }
+}
+
 }

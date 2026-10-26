@@ -6,21 +6,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Our Doctors - MediBook</title>
+    <title>MediBook - Doctors</title>
 
-    <!-- Google Font -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-        rel="stylesheet"
-    >
+        rel="stylesheet">
 
-    <!-- Font Awesome -->
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-    >
-
-    <!-- Doctors CSS -->
     <link rel="stylesheet" href="../css/doctors.css">
 </head>
 
@@ -38,6 +35,7 @@
             </a>
 
             <nav class="nav-links">
+
                 <a href="../index.html">
                     <i class="fa-solid fa-house"></i>
                     Home
@@ -46,6 +44,12 @@
                 <a href="doctors.html" class="active">
                     <i class="fa-solid fa-user-doctor"></i>
                     Doctors
+                </a>
+
+                <!-- HOSPITALS LINK ADDED -->
+                <a href="hospitals.html">
+                    <i class="fa-solid fa-hospital"></i>
+                    Hospitals
                 </a>
 
                 <a href="services.html">
@@ -57,14 +61,13 @@
                     <i class="fa-solid fa-circle-info"></i>
                     About
                 </a>
+
             </nav>
 
-           
-       <div class="nav-buttons" id="navButtons">
-       <a href="login.html" class="login-btn" id="loginNavBtn">Login</a>
-       <a href="register.html" class="register-btn" id="registerNavBtn">Register</a>
-     </div>
-
+            <div class="nav-buttons" id="navButtons">
+                <a href="login.html" class="login-btn" id="loginNavBtn">Login</a>
+                <a href="register.html" class="register-btn" id="registerNavBtn">Register</a>
+            </div>
 
         </div>
     </header>
@@ -143,12 +146,10 @@
             </p>
         </div>
 
-
         <!-- JavaScript inserts the database doctors here -->
         <div class="doctors-grid" id="doctorsGrid">
             <p id="doctorsLoading">Loading doctors...</p>
         </div>
-
 
         <!-- NO RESULTS MESSAGE -->
         <div
@@ -194,6 +195,10 @@
 
                 <a href="../index.html">Home</a>
                 <a href="doctors.html">Doctors</a>
+
+                <!-- HOSPITALS LINK ADDED -->
+                <a href="hospitals.html">Hospitals</a>
+
                 <a href="services.html">Services</a>
                 <a href="about.html">About</a>
             </div>
